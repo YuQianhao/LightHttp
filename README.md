@@ -8,6 +8,8 @@
 
 ### 如何构建一个网络请求？
 
+---
+
 ```java
 LightHttp.create(GetRequest.create("https://www.baidu.com/testApi.json"))
          .params(FormRequestParameter.create().add("ket","value"))
@@ -32,7 +34,7 @@ LightHttp.create(GetRequest.create("https://www.baidu.com/testApi.json"))
 
 #### 1、创建请求
 
-Lighthttp使用了一个静态方法**LightHttp.create()**来创建一个请求，这个静态方法的原型如下：
+LightHttp使用了一个静态方法LightHttp.create()来创建一个请求，这个静态方法的原型如下：
 
 ```java
 public static final LightHttp create(IRequestAddress address);
@@ -433,6 +435,8 @@ LightHttp.create(GetRequest.create("https://www.baidu.com"))
 
 ### 如何配置超时和Cookie？
 
+---
+
 LightHttp提供了一个init方法和loadTypeConvert方法来完成对于请求之前的配置。
 
 #### 1、全局初始化
@@ -493,6 +497,8 @@ public static final void loadTypeConvert(Class ...typeConvertProcessors);
 
 ### 何时进行初始化？
 
+---
+
 建议在Application的onCreate中进行init方法和loadTypeConvert方法的调用，例如：
 
 ```java
@@ -504,5 +510,49 @@ public class Application{
         LightHttp.loadTypeConvert(StudentConvert.class,Person.class,ClassGroup.class);
     }
 }
+```
+
+### 如何使用？
+
+---
+
+[![](https://www.jitpack.io/v/YuQianhao/LightHttp.svg)](https://www.jitpack.io/#YuQianhao/LightHttp)
+
+* Gradle
+
+1、首先将jitpack仓库添加到项目的build.gradle中
+
+```json
+allprojects {
+		repositories {
+			maven { url 'https://www.jitpack.io' }
+		}
+	}
+```
+
+2、在将仓库的项目依赖到你的项目Module的build.gradle中
+
+```json
+implementation 'com.github.YuQianhao:LightHttp:1.0.0'
+```
+
+### 开源许可
+
+---
+
+```text
+Copyright 2019 YuQianhao, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
