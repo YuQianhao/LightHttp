@@ -524,10 +524,10 @@ public class Application{
 
 ```text
 allprojects {
-		repositories {
-			maven { url 'https://www.jitpack.io' }
-		}
-	}
+    repositories {
+        maven { url 'https://www.jitpack.io' }
+    }
+}
 ```
 
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
