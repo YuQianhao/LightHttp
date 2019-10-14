@@ -522,7 +522,7 @@ public class Application{
 
 1、首先将jitpack仓库添加到项目的build.gradle中
 
-```json
+```text
 allprojects {
 		repositories {
 			maven { url 'https://www.jitpack.io' }
@@ -532,7 +532,7 @@ allprojects {
 
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
-```json
+```text
 implementation 'com.github.YuQianhao:LightHttp:1.0.0'
 ```
 
