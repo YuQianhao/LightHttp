@@ -1,6 +1,6 @@
 # LightHttp
 
-![于千皓](D:\AndroidProject\LightHttp\0.png)
+![于千皓](https://github.com/YuQianhao/LightHttp/blob/master/0.png)
 
 ​	框架，顾名思义，是一个能够让开大人员节省时间提高开发效率的支撑。如今框架满天飞的时代，百家争鸣，各显神通，渐渐的忽略了“框架”这个词语的本质，反而开发人员需要大量的时间和精力去学习一些花里胡哨，极其复杂的“无意义”框架，而忽略了本质侧重点的“业务逻辑”。
 
@@ -128,7 +128,7 @@ public interface IRequestParameter {
 
 LightHttp预设了这个接口类的实现类，通常来说不需要开发人员去实现，预设了**FormRequestParameter**和**JsonRequestParameter**这两种类型的请求参数，分别对应Form（application/x-www-form-urlencoded）和Json（application/json）。
 
-*※ 如果开发人员不满足于这两种类型，可以继承**AbsRequestParameter**这个类来实现其他类型的请求参数，可以参考[FormRequestParameter](https://www.baidu.com)源码。*
+*※ 如果开发人员不满足于这两种类型，可以继承**AbsRequestParameter**这个类来实现其他类型的请求参数，可以参考[FormRequestParameter](https://github.com/YuQianhao/LightHttp/blob/master/LightHttp-Library/src/main/java/com/yuqianhao/lighthttp/reqbody/FormRequestParameter.java)源码。*
 
 预设的这两个请求参数包装类都提供了一个重载静态方法**create**来帮助开发人员去快速创建一个实例，其中FormRequestParameter提供了**add(String key,String value)**和**addMap(Map<String,String> map)**来构建请求参数，而JsonRequestParameter提供了**json(Object obj)**来将一个对象反序列化成Json字符串，如果开发人员直接拥有Json字符串，那么可以使用另一个方法**jsonSource(String jsonSource)**直接传入一个Json字符串。
 
