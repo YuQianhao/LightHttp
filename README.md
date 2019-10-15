@@ -6,6 +6,30 @@
 
 ​	LightHttp是一个将网络请求简化，请求的配置简化的请求框架，能够让你从复杂的框架学习中逃离出来，将精力重新搬运回“业务逻辑”层面，现在的请求底层实现实现来自于[OkHttp](https://github.com/square/okhttp)。
 
+### 如何使用？
+
+------
+
+[![](https://www.jitpack.io/v/YuQianhao/LightHttp.svg)](https://www.jitpack.io/#YuQianhao/LightHttp)
+
+- Gradle
+
+1、首先将jitpack仓库添加到项目的build.gradle中
+
+```text
+allprojects {
+    repositories {
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+```
+
+2、在将仓库的项目依赖到你的项目Module的build.gradle中
+
+```text
+implementation 'com.github.YuQianhao:LightHttp:1.0.3'
+```
+
 ### 如何构建一个网络请求？
 
 ---
@@ -510,30 +534,6 @@ public class Application{
         LightHttp.loadTypeConvert(StudentConvert.class,Person.class,ClassGroup.class);
     }
 }
-```
-
-### 如何使用？
-
----
-
-[![](https://www.jitpack.io/v/YuQianhao/LightHttp.svg)](https://www.jitpack.io/#YuQianhao/LightHttp)
-
-* Gradle
-
-1、首先将jitpack仓库添加到项目的build.gradle中
-
-```text
-allprojects {
-    repositories {
-        maven { url 'https://www.jitpack.io' }
-    }
-}
-```
-
-2、在将仓库的项目依赖到你的项目Module的build.gradle中
-
-```text
-implementation 'com.github.YuQianhao:LightHttp:1.0.3'
 ```
 
 ### 开源许可
