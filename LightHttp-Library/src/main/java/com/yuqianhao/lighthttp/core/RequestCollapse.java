@@ -137,6 +137,8 @@ public class RequestCollapse {
                 }else{
                     responseCallback.onSuccess(Utils.getGson().fromJson(responseCallback.getResponseBufferString(),type));
                 }
+            }else{
+                responseCallback.onSuccess(null);
             }
         }else{
             responseCallback.onFailure(responseCallback.getCode(),responseCallback.getMessage());

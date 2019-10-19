@@ -27,8 +27,12 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.0.3'
+implementation 'com.github.YuQianhao:LightHttp:1.0.4'
 ```
+
+### Bug收集
+
+我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)，如果您有Bug或者疑问或者更好的建议提出，欢迎您添加我的微信：**185 6138 5652**。
 
 ### 如何构建一个网络请求？
 
