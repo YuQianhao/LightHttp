@@ -1,6 +1,10 @@
 package com.yuqianhao.lighthttp.core;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.google.gson.JsonParser;
+import com.yuqianhao.lighthttp.R;
 import com.yuqianhao.lighthttp.Utils;
 import com.yuqianhao.lighthttp.callback.Nullptr;
 import com.yuqianhao.lighthttp.callback.RequestCode;
@@ -36,7 +40,7 @@ import okhttp3.internal.http2.Header;
 
 public class RequestCollapse {
 
-     private static class _$Interceptor implements Interceptor{
+    private static class _$Interceptor implements Interceptor{
 
         public _$Interceptor(RequestInterceptor requestInterceptor){
             this.interceptor=requestInterceptor;
@@ -70,6 +74,8 @@ public class RequestCollapse {
     }
 
     private OkHttpClient okHttpClient;
+
+    private static final Handler HANDLER=new Handler(Looper.getMainLooper());
 
     public RequestCollapse(final RequestConfig requestConfig){
         OkHttpClient.Builder builder=new OkHttpClient.Builder();
@@ -159,14 +165,24 @@ public class RequestCollapse {
     public void asynchronous(final RequestMessage requestMessage){
         okHttpClient.newCall(buildRequest(requestMessage)).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                requestMessage.getResponseCallback().onFailure(RequestCode.LOCAL_ERROR,e.getMessage());
-                requestMessage.getResponseCallback().onCompany();
+            public void onFailure(@NotNull Call call, @NotNull final IOException e) {
+                HANDLER.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestMessage.getResponseCallback().onFailure(RequestCode.LOCAL_ERROR,e.getMessage());
+                        requestMessage.getResponseCallback().onCompany();
+                    }
+                });
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                callResult(requestMessage.getResponseCallback(),response);
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                HANDLER.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callResult(requestMessage.getResponseCallback(),response);
+                    }
+                });
             }
         });
     }
