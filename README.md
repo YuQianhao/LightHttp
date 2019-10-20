@@ -27,7 +27,7 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.0.4'
+implementation 'com.github.YuQianhao:LightHttp:1.0.5'
 ```
 
 ### Bug收集
@@ -167,6 +167,18 @@ FormRequestParameter.create();
 FormRequestParameter.create(Charset chatset);
 JsonRequestParameter.create();
 JsonRequestParameter.create(Charset chatset);
+```
+
+其中这两个子类都拥有header方法的两个版本，用来向请求中添加Header。
+
+```java
+FormRequestParameter.create().header("key","value");
+```
+
+```java
+Map<String,String> headerMap=new HashMap<>();
+headerMap.put("key","value");
+FormRequestParameter.create().header(headerMap);
 ```
 
 那么我们可以通过下面几个示例来结束传递参数的内容：

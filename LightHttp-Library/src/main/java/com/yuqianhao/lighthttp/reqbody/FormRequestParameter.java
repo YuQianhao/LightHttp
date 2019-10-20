@@ -27,6 +27,18 @@ public class FormRequestParameter extends AbsRequestParameter{
         return this;
     }
 
+    public FormRequestParameter header(String key,String value){
+        addHeader(key,value);
+        return this;
+    }
+
+    public FormRequestParameter header(Map<String,String> header){
+        for(Map.Entry<String,String> item:header.entrySet()){
+            addHeader(item.getKey(),item.getValue());
+        }
+        return this;
+    }
+
     public static FormRequestParameter create(){
         return new FormRequestParameter(Charset.defaultCharset());
     }

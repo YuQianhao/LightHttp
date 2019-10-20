@@ -3,6 +3,7 @@ package com.yuqianhao.lighthttp.reqbody;
 import com.yuqianhao.lighthttp.Utils;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 
 public class JsonRequestParameter extends AbsRequestParameter{
 
@@ -19,6 +20,18 @@ public class JsonRequestParameter extends AbsRequestParameter{
 
     public JsonRequestParameter jsonSource(String jsonSource){
         this.jsonSource=jsonSource;
+        return this;
+    }
+
+    public JsonRequestParameter header(String key,String value){
+        addHeader(key,value);
+        return this;
+    }
+
+    public JsonRequestParameter header(Map<String,String> header){
+        for(Map.Entry<String,String> item:header.entrySet()){
+            addHeader(item.getKey(),item.getValue());
+        }
         return this;
     }
 
