@@ -137,7 +137,7 @@ public class RequestCollapse {
                 type=Nullptr.class;
             }
             if(!type.equals(Nullptr.class) && !type.equals(Void.class)){
-                TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get((Class) type);
+                TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get(type);
                 if(typeConvertProcessor!=null){
                     responseCallback.onSuccess(typeConvertProcessor.convertType(responseCallback.getResponseBuffer()));
                 }else{
