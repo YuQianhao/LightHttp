@@ -122,11 +122,16 @@ public class RequestCollapse {
         return builder.build();
     }
 
-    private void callResult(ResponseCallback responseCallback,Response response){
+    private void callResult(final ResponseCallback responseCallback, Response response){
         try {
             responseCallback.reSet(response);
         } catch (IOException e) {
-            responseCallback.onFailure(RequestCode.LOCAL_ERROR,"Unable to create objects "+ResponseCallback.class.getName());
+            HANDLER.post(new Runnable() {
+                @Override
+                public void run() {
+                    responseCallback.onFailure(RequestCode.LOCAL_ERROR,"Unable to create objects "+ResponseCallback.class.getName());
+                }
+            });
         }
         if(responseCallback.getCode()==RequestCode.REQUEST_SUCCESS){
             Type superclassType=responseCallback.getClass().getGenericSuperclass();
@@ -137,19 +142,45 @@ public class RequestCollapse {
                 type=Nullptr.class;
             }
             if(!type.equals(Nullptr.class) && !type.equals(Void.class)){
-                TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get(type);
+                final TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get(type);
                 if(typeConvertProcessor!=null){
-                    responseCallback.onSuccess(typeConvertProcessor.convertType(responseCallback.getResponseBuffer()));
+                    HANDLER.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            responseCallback.onSuccess(typeConvertProcessor.convertType(responseCallback.getResponseBuffer()));
+                        }
+                    });
                 }else{
-                    responseCallback.onSuccess(Utils.getGson().fromJson(responseCallback.getResponseBufferString(),type));
+                    final Type _SendType=type;
+                    HANDLER.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            responseCallback.onSuccess(Utils.getGson().fromJson(responseCallback.getResponseBufferString(),_SendType));
+                        }
+                    });
                 }
             }else{
-                responseCallback.onSuccess(null);
+                HANDLER.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        responseCallback.onSuccess(null);
+                    }
+                });
             }
         }else{
-            responseCallback.onFailure(responseCallback.getCode(),responseCallback.getMessage());
+            HANDLER.post(new Runnable() {
+                @Override
+                public void run() {
+                    responseCallback.onFailure(responseCallback.getCode(),responseCallback.getMessage());
+                }
+            });
         }
-        responseCallback.onCompany();
+        HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                responseCallback.onCompany();
+            }
+        });
     }
 
     public void synchronization(RequestMessage requestMessage){
@@ -177,12 +208,7 @@ public class RequestCollapse {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                HANDLER.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callResult(requestMessage.getResponseCallback(),response);
-                    }
-                });
+                callResult(requestMessage.getResponseCallback(),response);
             }
         });
     }
