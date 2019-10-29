@@ -109,7 +109,8 @@ public class RequestCollapse {
             builder.url(stringBuilder.toString());
         }else{
 //            builder.post(RequestBody.create(requestMessage.getData(), MediaType.parse(requestMessage.getContentType()+";charset="+requestMessage.getCharset().toString())));
-            builder.post(RequestBody.create(requestMessage.getData(), MediaType.parse(requestMessage.getContentType())));
+            String _ReqData=requestMessage.getData();
+            builder.post(RequestBody.create(_ReqData==null?"":_ReqData, MediaType.parse(requestMessage.getContentType())));
         }
         Headers headers=requestMessage.getHeaders();
         Iterator<Pair<String, String>> iterator=headers.iterator();
@@ -124,6 +125,7 @@ public class RequestCollapse {
     }
 
     private void callResult(final ResponseCallback responseCallback, Response response){
+        if(responseCallback==null){return;}
         try {
             responseCallback.reSet(response);
         } catch (IOException e) {
