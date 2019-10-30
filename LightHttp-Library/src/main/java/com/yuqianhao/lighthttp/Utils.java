@@ -18,11 +18,7 @@ public class Utils {
 
     static {
         GsonBuilder gsonBuilder=new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                return new Date(json.getAsJsonPrimitive().getAsLong());
-            }
-        });
+        gsonBuilder.setDateFormat("yyyy-MM-dd HH:mm:ss");
         GSON=gsonBuilder.create();
     }
 
