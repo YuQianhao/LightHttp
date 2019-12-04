@@ -27,7 +27,7 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.1.1'
+implementation 'com.github.YuQianhao:LightHttp:1.1.2'
 ```
 
 ### Bug收集
@@ -534,6 +534,146 @@ LightHttp可能无法全部的为开发人员快速的将服务器返回的数�
 ```java
 public static final void loadTypeConvert(Class ...typeConvertProcessors);
 ```
+
+### 如何下载文件？
+
+----
+
+LightHttp支持下载文件以及下载文件进度的监听。
+
+```java
+public static class Main implements IDownloadCallback{
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        IDownloadAction downloadAction=LightHttp.createDownload("文件下载地址","文件保存路径");
+        downloadAction.setOnDownloadListener(this);
+        downloadAction.start();
+    }
+    
+    @Override
+    public void onDownloadStart() {
+        Log.e("Download","开始下载");
+    }
+
+    @Override
+    public void onDownloadError(int core, Exception e) {
+        Log.e("Download","下载失败："+e.getMessage());
+    }
+
+    @Override
+    public void onDownloadProgress(int size, int maxSize, double schedule) {
+		Log.e("Download","已下载："+size+"，总长度："+maxSize+"，下载进度："+(schedule*100)+"%");
+    }
+
+    @Override
+    public void onDownloadComplete(File file) {
+		Log.e("Download","下载完成");
+    }
+
+    @Override
+    public void onDownloadCancel() {
+        Log.e("Download","取消下载");
+    }
+}
+```
+
+控制台输出：
+
+```text
+开始下载
+已下载：4096,总长度：81920，下载进度：5%
+已下载：8192,总长度：81920，下载进度：10%
+已下载：12888,总长度：81920，下载进度：15%
+已下载：16384,总长度：81920，下载进度：20%
+...
+已下载：77824,总长度：81920，下载进度：95%
+已下载：81920,总长度：81920，下载进度：100%
+下载完成
+```
+
+LightHttp提供了一个静态方法**createDownload**来创建一个下载任务，这个方法有三个重载版本：
+
+```java
+public static final IDownloadAction createDownload(){
+	return new DownloadImpl();
+}
+
+public static final IDownloadAction createDownload(String url){
+	return new DownloadImpl(url);
+}
+
+public static final IDownloadAction createDownload(String url,String path){
+	return new DownloadImpl(url,path);
+}
+```
+
+这三个方法都会创建一个接口类**IDownloadAction**的实例，这个接口类里定义了所有关于下载文件的方法。
+
+```java
+public interface IDownloadAction {
+
+    IDownloadAction setDownloadUrl(String url);
+
+    IDownloadAction setDownloadSaveFile(String path);
+
+    boolean isDownloading();
+
+    IDownloadAction setOnDownloadListener(IDownloadCallback downloadListener);
+
+    IDownloadAction start();
+
+    void cancel();
+}
+```
+
+* setDownloadUrl(String url)：设置下载文件的URL地址，在start方法调用之前调用有效。
+* setDownloadSaveFile(String path)：设置下载文件在本地保存的路径，在start方法调用之前调用有效。
+* isDownloading()：获取当前的下载状态。
+* setOnDownloadListener(IDownloadCallback downloadListener)：设置下载监听器
+* start()：开始下载。
+* cancel()：取消当前已经开始的下载任务。
+
+LightHttp提供了一个**IDownloadCallback**接口类用来监听下载的进度和状态，定义如下：
+
+```java
+public interface IDownloadCallback {
+
+    void onDownloadStart();
+
+    void onDownloadError(int core,Exception e);
+
+    void onDownloadProgress(int size,int maxSize,double schedule);
+
+    void onDownloadComplete(File file);
+
+    void onDownloadCancel();
+}
+```
+
+* onDownloadStart()：开始下载
+
+* onDownloadError(int core,Exception e)：下载失败，失败原因由参数一和二决定
+
+  参数一：core，定义了下载错误的编码，例如404,403
+
+  参数二：e，定义了下载错误的异常类。
+
+* onDownloadProgress(int size,int maxSize,double schedule)：下载进度的监听，下载的时候会通过调用这个方法来传递下载的进度：
+
+  参数一：size，当前已经下载的长度
+
+  参数二：maxSize，文件的总长度
+
+  参数三：schedule，当前已经下载的进度，取值范围为0-1，可以将此参数*100获得下载进度的百分比。
+
+* onDownloadComplete(File file)：下载完成的回调方法，下载完成LightHttp将会调用这个方法并把下载好的文件通过参数传递回来。
+* onDownloadCancel()：这个下载人物被取消。
+
+通常来说，我们通过静态方法创建并设置下载地址和文件保存路径来创建一个下载任务，如果下载地址和文件保存路径有一个缺失的这个下载任务将不会正常运转。当然，也可以使用无参数的静态方法创建实例，但是在start方法调用之前需要调用setDownloadUrl方法和setDownloadSaveFile方法设置。
+
+**在创建下载任务并下载之前要确保拥有*网络权限*和*外置存储路径读写权限*。**
 
 ### 何时进行初始化？
 

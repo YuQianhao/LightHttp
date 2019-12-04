@@ -101,6 +101,7 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
     @Override
     public IDownloadAction start() {
         if(check()){
+            this.canRunning=true;
             Message startMessage=createMessage();
             startMessage.what=MESSAGEWHAT_START;
             sendMessage(startMessage);
@@ -145,12 +146,10 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
                         bufferedOutputStream.close();
                         bufferedInputStream.close();
                         Message completeMsg=createMessage();
-                        if(!canRunning){
-                            completeMsg.what=MESSAGEWHAT_CANCEL;
-                        }else{
+                        if(canRunning){
                             completeMsg.what=MESSAGEWHAT_COMPLETE;
+                            sendMessage(completeMsg);
                         }
-                        sendMessage(completeMsg);
                     }
                 }
             });

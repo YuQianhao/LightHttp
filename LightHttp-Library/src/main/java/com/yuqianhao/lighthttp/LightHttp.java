@@ -101,8 +101,6 @@ public class LightHttp {
         return new DownloadImpl(url);
     }
 
-
-
     public static final LightHttp loadRequest(Class requestClass){
         initLightHttp();
         IRequestAddress requestAddress=RequestMethodV2Manager.get(requestClass);
