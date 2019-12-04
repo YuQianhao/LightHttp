@@ -89,6 +89,10 @@ public class LightHttp {
         return LIGHT_HTTP;
     }
 
+    public static final IDownloadAction createDownload(){
+        return new DownloadImpl();
+    }
+
     public static final IDownloadAction createDownload(String url,String path){
         return new DownloadImpl(url,path);
     }
@@ -97,9 +101,7 @@ public class LightHttp {
         return new DownloadImpl(url);
     }
 
-    public static final IDownloadAction createDownload(){
-        return new DownloadImpl();
-    }
+
 
     public static final LightHttp loadRequest(Class requestClass){
         initLightHttp();
