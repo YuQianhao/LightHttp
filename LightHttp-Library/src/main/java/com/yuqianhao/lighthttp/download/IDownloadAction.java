@@ -2,15 +2,15 @@ package com.yuqianhao.lighthttp.download;
 
 public interface IDownloadAction {
 
-    void setDownloadUrl(String url);
+    IDownloadAction setDownloadUrl(String url);
 
-    void setDownloadSaveFile(String path);
+    IDownloadAction setDownloadSaveFile(String path);
 
     boolean isDownloading();
 
-    void setOnDownloadListener(IDownloadCallback downloadListener);
+    IDownloadAction setOnDownloadListener(IDownloadCallback downloadListener);
 
-    void start();
+    IDownloadAction start();
 
     void cancel();
 

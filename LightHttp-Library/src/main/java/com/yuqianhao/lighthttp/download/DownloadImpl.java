@@ -76,13 +76,15 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
     }
 
     @Override
-    public void setDownloadUrl(String url) {
+    public IDownloadAction setDownloadUrl(String url) {
         this.mDownloadUrl=url;
+        return this;
     }
 
     @Override
-    public void setDownloadSaveFile(String path) {
+    public IDownloadAction setDownloadSaveFile(String path) {
         this.mDownloadSavePath=path;
+        return this;
     }
 
     @Override
@@ -91,12 +93,13 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
     }
 
     @Override
-    public void setOnDownloadListener(IDownloadCallback downloadListener) {
+    public IDownloadAction setOnDownloadListener(IDownloadCallback downloadListener) {
         this.downloadCallback=downloadListener;
+        return this;
     }
 
     @Override
-    public void start() {
+    public IDownloadAction start() {
         if(check()){
             Message startMessage=createMessage();
             startMessage.what=MESSAGEWHAT_START;
@@ -152,6 +155,7 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
                 }
             });
         }
+        return this;
     }
 
     private Message createMessage(){
@@ -194,20 +198,20 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
         if(this.downloadCallback==null){return false;}
         switch (msg.what){
             case MESSAGEWHAT_ERROR:{
-                this.downloadCallback.onError(msg.arg1,new DownloadException(msg.obj.toString()));
-            }
+                this.downloadCallback.onDownloadError(msg.arg1,new DownloadException(msg.obj.toString()));
+            }break;
             case MESSAGEWHAT_START:{
                 downloading=true;
-                this.downloadCallback.onStart();
-            }
+                this.downloadCallback.onDownloadStart();
+            }break;
             case MESSAGEWHAT_PROGRESS:{
-                this.downloadCallback.onProgress(msg.arg1,msg.arg2,((Double)msg.obj).doubleValue());
-            }
+                this.downloadCallback.onDownloadProgress(msg.arg1,msg.arg2,((Double)msg.obj).doubleValue());
+            }break;
             case MESSAGEWHAT_COMPLETE:{
-                this.downloadCallback.onComplete(new File(this.mDownloadSavePath));
+                this.downloadCallback.onDownloadComplete(new File(this.mDownloadSavePath));
             }break;
             case MESSAGEWHAT_CANCEL:{
-                this.downloadCallback.onCancel();
+                this.downloadCallback.onDownloadCancel();
             }break;
         }
         return true;

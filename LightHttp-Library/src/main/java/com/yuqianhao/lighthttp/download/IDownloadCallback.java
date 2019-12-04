@@ -4,14 +4,14 @@ import java.io.File;
 
 public interface IDownloadCallback {
 
-    void onStart();
+    void onDownloadStart();
 
-    void onError(int core,Exception e);
+    void onDownloadError(int core,Exception e);
 
-    void onProgress(int size,int maxSize,double schedule);
+    void onDownloadProgress(int size,int maxSize,double schedule);
 
-    void onComplete(File file);
+    void onDownloadComplete(File file);
 
-    void onCancel();
+    void onDownloadCancel();
 
 }
