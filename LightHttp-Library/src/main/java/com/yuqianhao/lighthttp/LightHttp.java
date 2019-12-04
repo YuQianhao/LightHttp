@@ -5,6 +5,8 @@ import com.yuqianhao.lighthttp.convert.ConvertProcessManager;
 import com.yuqianhao.lighthttp.convert.ConvertProcessor;
 import com.yuqianhao.lighthttp.convert.TypeConvertProcessor;
 import com.yuqianhao.lighthttp.core.RequestCollapse;
+import com.yuqianhao.lighthttp.download.DownloadImpl;
+import com.yuqianhao.lighthttp.download.IDownloadAction;
 import com.yuqianhao.lighthttp.reqbody.FormRequestParameter;
 import com.yuqianhao.lighthttp.reqbody.IRequestParameter;
 import com.yuqianhao.lighthttp.reqheader.IRequestAddress;
@@ -85,6 +87,18 @@ public class LightHttp {
         initLightHttp();
         LIGHT_HTTP.requestAddress=address;
         return LIGHT_HTTP;
+    }
+
+    public static final IDownloadAction createDownload(String url,String path){
+        return new DownloadImpl(url,path);
+    }
+
+    public static final IDownloadAction createDownload(String url){
+        return new DownloadImpl(url);
+    }
+
+    public static final IDownloadAction createDownload(){
+        return new DownloadImpl();
     }
 
     public static final LightHttp loadRequest(Class requestClass){
