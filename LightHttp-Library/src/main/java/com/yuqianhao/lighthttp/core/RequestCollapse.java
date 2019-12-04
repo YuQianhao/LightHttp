@@ -3,14 +3,13 @@ package com.yuqianhao.lighthttp.core;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.JsonParser;
-import com.yuqianhao.lighthttp.R;
 import com.yuqianhao.lighthttp.Utils;
 import com.yuqianhao.lighthttp.callback.Nullptr;
 import com.yuqianhao.lighthttp.callback.RequestCode;
 import com.yuqianhao.lighthttp.callback.ResponseCallback;
 import com.yuqianhao.lighthttp.convert.ConvertProcessManager;
 import com.yuqianhao.lighthttp.convert.TypeConvertProcessor;
+import com.yuqianhao.lighthttp.okhttp.HttpClientFactory;
 import com.yuqianhao.lighthttp.reqheader.MethodType;
 import com.yuqianhao.lighthttp.request.RequestConfig;
 import com.yuqianhao.lighthttp.request.RequestInterceptor;
@@ -36,11 +35,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.http2.Header;
 
 public class RequestCollapse {
 
-    private static class _$Interceptor implements Interceptor{
+    public static class _$Interceptor implements Interceptor{
 
         public _$Interceptor(RequestInterceptor requestInterceptor){
             this.interceptor=requestInterceptor;
@@ -78,20 +76,7 @@ public class RequestCollapse {
     private static final Handler HANDLER=new Handler(Looper.getMainLooper());
 
     public RequestCollapse(final RequestConfig requestConfig){
-        OkHttpClient.Builder builder=new OkHttpClient.Builder();
-        if(requestConfig!=null){
-            builder.connectTimeout(requestConfig.connectTimeout(),requestConfig.timeUnit());
-            builder.callTimeout(requestConfig.callTimeout(),requestConfig.timeUnit());
-            builder.writeTimeout(requestConfig.writeTimeOut(),requestConfig.timeUnit());
-            builder.readTimeout(requestConfig.readTimeout(),requestConfig.timeUnit());
-            if(requestConfig.cookieCallback()!=null){
-                builder.cookieJar(requestConfig.cookieCallback());
-            }
-            if(requestConfig.requestInterceptor()!=null){
-                builder.addInterceptor(new _$Interceptor(requestConfig.requestInterceptor()));
-            }
-        }
-        okHttpClient=builder.build();
+        okHttpClient= HttpClientFactory.getOkHttpClient(requestConfig);
     }
 
     private Request buildRequest(RequestMessage requestMessage){
