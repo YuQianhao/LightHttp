@@ -6,6 +6,8 @@
 
 ​	LightHttp是一个将网络请求简化，请求的配置简化的请求框架，能够让你从复杂的框架学习中逃离出来，将精力重新搬运回“业务逻辑”层面，现在的请求底层实现实现来自于[OkHttp](https://github.com/square/okhttp)。
 
+​	LightHttp提供了的Get，Post，Put，Delete四种不同方法的同步和异步请求，提供了一个文件下载服务。
+
 ### 如何使用？
 
 ------
@@ -27,16 +29,28 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.1.1'
+implementation 'com.github.YuQianhao:LightHttp:1.2.1'
 ```
 
 ### Bug收集
 
 我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)，如果您有Bug或者疑问或者更好的建议提出，欢迎您添加我的微信：**185 6138 5652**。
 
+### 最近一次修正记录
+
+生效的版本：1.2.1
+
+* 调整了**ResponseCallback**方法**getHeaders**的返回值。
+
+  原始版本返回一个Header，现在修改为直接返回Map<String,String>
+
+* 提高了对同步请求的支持(详见发送请求部分)。
+
 ### 如何构建一个网络请求？
 
 ---
+
+发送一个异步请求。
 
 ```java
 LightHttp.create(GetRequest.create("https://www.baidu.com/testApi.json"))
@@ -47,6 +61,17 @@ LightHttp.create(GetRequest.create("https://www.baidu.com/testApi.json"))
               }
           })
           .async();
+```
+
+发送一个同步请求。
+
+```java
+Response<TestBean> response=LightHttp
+					.create(GetRequest.create("https://www.baidu.com/testApi.json"))
+         			.params(FormRequestParameter.create().add("ket","value"))
+         			.sync(TestBean.class);
+int code=response.getCode();
+TestBean testBead=response.to();
 ```
 
 建造者模式提供给了我们一个很好的流式代码布局，能够让我们一眼就能看出这些代码代表的含义，减少了开发人员写代码和读代码的时间和精力成本。
@@ -208,11 +233,13 @@ LightHttp.create(GetRequest.create("https://www.baidu.com",Charset.UTF8))
          .params(JsonRequestParameter.create().jsonSource(jsonSource))
 ```
 
-#### 3、绑定回调
+#### 3、绑定回调，获取应答的数据
 
 我们通过了1和2两个小篇幅了解了如何创建一个请求和传递参数，一个完整的请求还应该来获取服务器的应答，来获取服务器传给我们的数据，当然，我们也可以不绑定回调函数，代表这个请求只是发送出去，而不会处理服务器返回的数据。
 
-LightHttp提供了一个成员方法**callback**来设置回调，如果不绑定回调函数这个方法无需调用，callback的原型如下：
+- 相对于异步请求，发送出去请求之后在异步等待结果的返回，所以采用Callback的方式去完成请求。
+
+LightHttp提供了一个成员方法**callback**来设置异步请求的回调，如果不绑定回调函数则这个方法无需调用（在sync同步请求时，不需要指定callback），callback的原型如下：
 
 ```java
 public final LightHttp callback(ResponseCallback responseCallback);
@@ -262,6 +289,40 @@ public class Student{
 ```
 
 那么ResponseCallback的泛型参数就可以指定为Student，当回调onSuccess的时候LightHttp会自动的将Json反序列化成Student并传递给方法。
+
+* 对于同步请求，客户端发送出去请求之后会在当前线程环境中等待服务器的返回，无法采用Callback的方式进行返回，即便可以，也并不直观，所以采用了立即返回结果的方式进行使用。
+
+LightHttp提供了一个sync方法进行同步请求，sync提供了连个重载版本，用来处理数据结果的转换。
+
+```java
+public Response sync();
+public <_Tx> Response<_Tx> sync(Type type);
+```
+
+如果客户端不想知道服务器具体给出了什么样的应答，只需要知道请求已发出，那么可以调用无参数的sync方法，这个方法默认传入了一个Nullptr.class并调用了有参数的sync方法，两个方法都返回了一个Response对象，这个对象代表远程服务的应答，应答类提供了以下几个方法。
+
+| 方法名称                                        | 说明                                         |
+| ----------------------------------------------- | -------------------------------------------- |
+| Headers getHeaders()                            | 获取Headers                                  |
+| Long getContentLength()                         | 获取返回的数据的长度                         |
+| byte[] getResponseBuffer()                      | 获取返回的数据的原始类型                     |
+| String getResponseBufferString()                | 使用默认编码获取字符串类型的返回数据         |
+| String getResponseBufferString(Charset charset) | 使用指定编码获取字符串类型的返回数据         |
+| String getMessage()                             | 获取Http请求的状态消息                       |
+| int getCode()                                   | 获取Http请求的状态码                         |
+| MediaType getMediaType()                        | 获取返回数据类型的MediaType                  |
+| _Tx to()                                        | 获取服务具体返回的数据，并给提供转换后的版本 |
+
+值得注意的是，to()方法返回了一个_Tx的泛型类型，这个泛型的具体类型由传入sync方法里的类型决定，例如：
+
+```java
+//需要获取返回结果并处理
+Response<TestBean> response=LightHttp....sync(TestBean.class);
+//无需获取返回结果
+Response response=LightHttp....sync();
+```
+
+**注意！如果调用sync()，不传入任何具体的Class，那么to()方法一定会返回null。除非传入给sync一个具体的类型。除此之外的任何方法都可以安全调用。**
 
 2、服务端返回的不是Json或者前端没有对应的Bean，但是开发人员还是想LightHttp直接将返回的数据自动的反序列化成想要的数据，那么开发人员可以自定义一个数据转换器，例如服务端返回的是xml格式的数据：
 
@@ -458,22 +519,15 @@ LightHttp.create(GetRequest.create("https://www.baidu.com"))
 ```
 
 ```java
-LightHttp.create(GetRequest.create("https://www.baidu.com"))
-         .params(FormRequestParameter.create().add("k1","v1").add("k2","v2"))
-    	 .callback(new ResponseCallback<Student>(){
-        	@Override
-            public void onSuccess(Student student){
-                runOnUI({
-                    mStudentNameView.setText(student.getName());
-                })
-            }
-    	})
-    	.sync();
+Response<Student> response=LightHttp
+					.create(GetRequest.create("https://www.baidu.com"))
+         			.params(FormRequestParameter.create().add("k1","v1").add("k2","v2"))
+    	 			.sync(Student.class);
 ```
 
 到这里，我们就结束了LightHttp的网络请求部分，接下来我们将用一个短小的篇幅来介绍LightHttp提供的请求配置，例如超时设置，Cookie设置和请求监听。
 
-### 如何配置超时和Cookie？
+### 如何配置超时？
 
 ---
 
@@ -535,6 +589,146 @@ LightHttp可能无法全部的为开发人员快速的将服务器返回的数�
 public static final void loadTypeConvert(Class ...typeConvertProcessors);
 ```
 
+### 如何下载文件？
+
+----
+
+LightHttp支持下载文件以及下载文件进度的监听。
+
+```java
+public static class Main implements IDownloadCallback{
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        IDownloadAction downloadAction=LightHttp.createDownload("文件下载地址","文件保存路径");
+        downloadAction.setOnDownloadListener(this);
+        downloadAction.start();
+    }
+    
+    @Override
+    public void onDownloadStart() {
+        Log.e("Download","开始下载");
+    }
+
+    @Override
+    public void onDownloadError(int core, Exception e) {
+        Log.e("Download","下载失败："+e.getMessage());
+    }
+
+    @Override
+    public void onDownloadProgress(int size, int maxSize, double schedule) {
+		Log.e("Download","已下载："+size+"，总长度："+maxSize+"，下载进度："+(schedule*100)+"%");
+    }
+
+    @Override
+    public void onDownloadComplete(File file) {
+		Log.e("Download","下载完成");
+    }
+
+    @Override
+    public void onDownloadCancel() {
+        Log.e("Download","取消下载");
+    }
+}
+```
+
+控制台输出：
+
+```text
+开始下载
+已下载：4096,总长度：81920，下载进度：5%
+已下载：8192,总长度：81920，下载进度：10%
+已下载：12888,总长度：81920，下载进度：15%
+已下载：16384,总长度：81920，下载进度：20%
+...
+已下载：77824,总长度：81920，下载进度：95%
+已下载：81920,总长度：81920，下载进度：100%
+下载完成
+```
+
+LightHttp提供了一个静态方法**createDownload**来创建一个下载任务，这个方法有三个重载版本：
+
+```java
+public static final IDownloadAction createDownload(){
+	return new DownloadImpl();
+}
+
+public static final IDownloadAction createDownload(String url){
+	return new DownloadImpl(url);
+}
+
+public static final IDownloadAction createDownload(String url,String path){
+	return new DownloadImpl(url,path);
+}
+```
+
+这三个方法都会创建一个接口类**IDownloadAction**的实例，这个接口类里定义了所有关于下载文件的方法。
+
+```java
+public interface IDownloadAction {
+
+    IDownloadAction setDownloadUrl(String url);
+
+    IDownloadAction setDownloadSaveFile(String path);
+
+    boolean isDownloading();
+
+    IDownloadAction setOnDownloadListener(IDownloadCallback downloadListener);
+
+    IDownloadAction start();
+
+    void cancel();
+}
+```
+
+* setDownloadUrl(String url)：设置下载文件的URL地址，在start方法调用之前调用有效。
+* setDownloadSaveFile(String path)：设置下载文件在本地保存的路径，在start方法调用之前调用有效。
+* isDownloading()：获取当前的下载状态。
+* setOnDownloadListener(IDownloadCallback downloadListener)：设置下载监听器
+* start()：开始下载。
+* cancel()：取消当前已经开始的下载任务。
+
+LightHttp提供了一个**IDownloadCallback**接口类用来监听下载的进度和状态，定义如下：
+
+```java
+public interface IDownloadCallback {
+
+    void onDownloadStart();
+
+    void onDownloadError(int core,Exception e);
+
+    void onDownloadProgress(int size,int maxSize,double schedule);
+
+    void onDownloadComplete(File file);
+
+    void onDownloadCancel();
+}
+```
+
+* onDownloadStart()：开始下载
+
+* onDownloadError(int core,Exception e)：下载失败，失败原因由参数一和二决定
+
+  参数一：core，定义了下载错误的编码，例如404,403
+
+  参数二：e，定义了下载错误的异常类。
+
+* onDownloadProgress(int size,int maxSize,double schedule)：下载进度的监听，下载的时候会通过调用这个方法来传递下载的进度：
+
+  参数一：size，当前已经下载的长度
+
+  参数二：maxSize，文件的总长度
+
+  参数三：schedule，当前已经下载的进度，取值范围为0-1，可以将此参数*100获得下载进度的百分比。
+
+* onDownloadComplete(File file)：下载完成的回调方法，下载完成LightHttp将会调用这个方法并把下载好的文件通过参数传递回来。
+* onDownloadCancel()：这个下载人物被取消。
+
+通常来说，我们通过静态方法创建并设置下载地址和文件保存路径来创建一个下载任务，如果下载地址和文件保存路径有一个缺失的这个下载任务将不会正常运转。当然，也可以使用无参数的静态方法创建实例，但是在start方法调用之前需要调用setDownloadUrl方法和setDownloadSaveFile方法设置。
+
+**在创建下载任务并下载之前要确保拥有*网络权限*和*外置存储路径读写权限*。**
+
 ### 何时进行初始化？
 
 ---
@@ -551,6 +745,10 @@ public class Application{
     }
 }
 ```
+
+### LightHttp的缺点
+
+到目前为止，LightHttp并未提供Cookie相关的任何操作方法，我会在未来的版本提供支持。
 
 ### 开源许可
 

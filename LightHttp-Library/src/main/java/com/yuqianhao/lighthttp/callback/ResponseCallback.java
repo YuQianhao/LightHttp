@@ -4,7 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import kotlin.Pair;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -19,12 +23,12 @@ public abstract class ResponseCallback<_RespType> {
     /**
      * 服务器返回的消息
      * */
-    private String mResponseMessage;
+    protected String mResponseMessage;
 
     /**
      * 服务器响应码
      * */
-    private int mCode;
+    protected int mCode;
 
     /**
      * 服务器返回的数据类型
@@ -52,8 +56,16 @@ public abstract class ResponseCallback<_RespType> {
     /**
      * 获取服务器应答的Headers
      * */
-    public final Headers getHeaders(){
-        return mHeaders;
+    public final Map<String,String> getHeaders(){
+        Map<String,String> headerMap=new HashMap<>();
+        if(mHeaders!=null){
+            Iterator<Pair<String,String>> iter=mHeaders.iterator();
+            while(iter.hasNext()){
+                Pair<String,String> value=iter.next();
+                headerMap.put(value.getFirst(),value.getSecond());
+            }
+        }
+        return headerMap;
     }
 
     /**
@@ -100,8 +112,15 @@ public abstract class ResponseCallback<_RespType> {
     /**
      * 获取服务器应答数据的格式
      * */
-    public final MediaType getMediaType(){
-        return mMediaType;
+    public final com.yuqianhao.lighthttp.model.MediaType getMediaType(){
+        if(mMediaType!=null){
+            com.yuqianhao.lighthttp.model.MediaType result=new com.yuqianhao.lighthttp.model.MediaType();
+            result.setCharset(mMediaType.charset());
+            result.setType(mMediaType.type());
+            result.setSubType(mMediaType.subtype());
+            return result;
+        }
+        return null;
     }
 
     /**

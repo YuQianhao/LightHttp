@@ -109,7 +109,7 @@ public class RequestCollapse {
         return builder.build();
     }
 
-    private void callResult(final ResponseCallback responseCallback, Response response){
+    private void callResult(final ResponseCallback responseCallback, Response response,Type refType){
         if(responseCallback==null){return;}
         try {
             responseCallback.reSet(response);
@@ -124,12 +124,16 @@ public class RequestCollapse {
         if(responseCallback.getCode()==RequestCode.REQUEST_SUCCESS){
             Type superclassType=responseCallback.getClass().getGenericSuperclass();
             Type type;
-            if(superclassType instanceof ParameterizedType){
-                type=((ParameterizedType)responseCallback.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+            if(refType==null){
+                if(superclassType instanceof ParameterizedType){
+                    type=((ParameterizedType)responseCallback.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+                }else{
+                    type=Nullptr.class;
+                }
             }else{
-                type=Nullptr.class;
+                type=refType;
             }
-            if(!type.equals(Nullptr.class) && !type.equals(Void.class)){
+            if(!type.equals(Nullptr.class) && !type.equals(Void.class) && !type.equals(Object.class)){
                 final TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get(type);
                 if(typeConvertProcessor!=null){
                     HANDLER.post(new Runnable() {
@@ -171,11 +175,11 @@ public class RequestCollapse {
         });
     }
 
-    public void synchronization(RequestMessage requestMessage){
+    public void synchronization(RequestMessage requestMessage,Type type){
         ResponseCallback responseCallback=requestMessage.getResponseCallback();
         try {
             Response response=okHttpClient.newCall(buildRequest(requestMessage)).execute();
-            callResult(requestMessage.getResponseCallback(),response);
+            callResult(requestMessage.getResponseCallback(),response,type);
         } catch (IOException e) {
             responseCallback.onFailure(RequestCode.LOCAL_ERROR,e.getMessage());
         }
@@ -196,7 +200,7 @@ public class RequestCollapse {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                callResult(requestMessage.getResponseCallback(),response);
+                callResult(requestMessage.getResponseCallback(),response,null);
             }
         });
     }

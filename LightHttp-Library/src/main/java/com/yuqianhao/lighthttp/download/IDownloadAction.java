@@ -14,5 +14,4 @@ public interface IDownloadAction {
 
     void cancel();
 
-
 }

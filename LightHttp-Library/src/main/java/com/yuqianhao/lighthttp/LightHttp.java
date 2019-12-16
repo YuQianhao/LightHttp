@@ -1,5 +1,6 @@
 package com.yuqianhao.lighthttp;
 
+import com.yuqianhao.lighthttp.callback.Nullptr;
 import com.yuqianhao.lighthttp.callback.ResponseCallback;
 import com.yuqianhao.lighthttp.convert.ConvertProcessManager;
 import com.yuqianhao.lighthttp.convert.ConvertProcessor;
@@ -7,6 +8,7 @@ import com.yuqianhao.lighthttp.convert.TypeConvertProcessor;
 import com.yuqianhao.lighthttp.core.RequestCollapse;
 import com.yuqianhao.lighthttp.download.DownloadImpl;
 import com.yuqianhao.lighthttp.download.IDownloadAction;
+import com.yuqianhao.lighthttp.model.Response;
 import com.yuqianhao.lighthttp.reqbody.FormRequestParameter;
 import com.yuqianhao.lighthttp.reqbody.IRequestParameter;
 import com.yuqianhao.lighthttp.reqheader.IRequestAddress;
@@ -14,6 +16,7 @@ import com.yuqianhao.lighthttp.reqheader.v2.RequestMethodV2Manager;
 import com.yuqianhao.lighthttp.request.RequestConfig;
 import com.yuqianhao.lighthttp.request.RequestMessage;
 
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 public class LightHttp {
@@ -59,8 +62,16 @@ public class LightHttp {
         requestCollapse.asynchronous(buildRequestMessage());
     }
 
-    public void sync(){
-        requestCollapse.synchronization(buildRequestMessage());
+    public <_Tx> Response<_Tx> sync(Type type){
+        RequestMessage requestMessage=buildRequestMessage();
+        Response<_Tx> response=new Response<>();
+        requestMessage.setResponseCallback(response);
+        requestCollapse.synchronization(requestMessage,type);
+        return response;
+    }
+
+    public <_Tx> Response<_Tx> sync(){
+        return sync(Nullptr.class);
     }
 
     public static final void init(RequestConfig requestConfig){
@@ -100,8 +111,6 @@ public class LightHttp {
     public static final IDownloadAction createDownload(String url){
         return new DownloadImpl(url);
     }
-
-
 
     public static final LightHttp loadRequest(Class requestClass){
         initLightHttp();
