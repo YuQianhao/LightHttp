@@ -8,16 +8,17 @@ import com.yuqianhao.lighthttp.convert.TypeConvertProcessor;
 import com.yuqianhao.lighthttp.core.RequestCollapse;
 import com.yuqianhao.lighthttp.download.DownloadImpl;
 import com.yuqianhao.lighthttp.download.IDownloadAction;
+import com.yuqianhao.lighthttp.handler.HandlerManager;
 import com.yuqianhao.lighthttp.model.Response;
 import com.yuqianhao.lighthttp.reqbody.FormRequestParameter;
 import com.yuqianhao.lighthttp.reqbody.IRequestParameter;
 import com.yuqianhao.lighthttp.reqheader.IRequestAddress;
 import com.yuqianhao.lighthttp.reqheader.v2.RequestMethodV2Manager;
+import com.yuqianhao.lighthttp.handler.IRequestFirstHandle;
 import com.yuqianhao.lighthttp.request.RequestConfig;
 import com.yuqianhao.lighthttp.request.RequestMessage;
 
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 
 public class LightHttp {
 
@@ -76,6 +77,10 @@ public class LightHttp {
 
     public static final void init(RequestConfig requestConfig){
         LIGHT_HTTP=new LightHttp(requestConfig);
+    }
+
+    public static final void setRequestFirstHandler(IRequestFirstHandle requestFirstHandler){
+        HandlerManager.setRequestFirstHandle(requestFirstHandler);
     }
 
     public static final void loadTypeConvert(Class ...typeConvertProcessors) throws InstantiationException, IllegalAccessException {

@@ -1,5 +1,6 @@
 package com.yuqianhao.lighthttp.request;
 
+import com.yuqianhao.lighthttp.callback.EmptyResponseCallback;
 import com.yuqianhao.lighthttp.callback.ResponseCallback;
 import com.yuqianhao.lighthttp.reqbody.IRequestParameter;
 import com.yuqianhao.lighthttp.reqheader.IRequestAddress;
@@ -44,7 +45,7 @@ public class RequestMessage {
                 parameter.charset(),
                 parameter.headers(),
                 parameter.data(),
-                responseCallback,
+                (responseCallback==null)? EmptyResponseCallback.getInstance():responseCallback,
                 address.tag());
     }
 

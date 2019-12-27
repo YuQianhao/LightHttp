@@ -6,7 +6,7 @@
 
 ​	LightHttp是一个将网络请求简化，请求的配置简化的请求框架，能够让你从复杂的框架学习中逃离出来，将精力重新搬运回“业务逻辑”层面，现在的请求底层实现实现来自于[OkHttp](https://github.com/square/okhttp)。
 
-​	LightHttp提供了的Get，Post，Put，Delete四种不同方法的同步和异步请求，提供了一个文件下载服务。
+​	LightHttp提供了的Get，Post，Put，Delete四种不同方法的同步和异步请求，提供了一个文件下载服务以及一个请求拦截处理器。
 
 ### 如何使用？
 
@@ -29,7 +29,7 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.2.2'
+implementation 'com.github.YuQianhao:LightHttp:1.2.5'
 ```
 
 ### Bug收集
@@ -38,13 +38,8 @@ implementation 'com.github.YuQianhao:LightHttp:1.2.2'
 
 ### 最近一次修正记录
 
-生效的版本：1.2.1
+* 增加了LightHttp提供的请求拦截器。
 
-* 调整了**ResponseCallback**方法**getHeaders**的返回值。
-
-  原始版本返回一个Header，现在修改为直接返回Map<String,String>
-
-* 提高了对同步请求的支持(详见发送请求部分)。
 
 ### 如何构建一个网络请求？
 
@@ -746,7 +741,44 @@ public class Application{
 }
 ```
 
+### LightHttp提供的请求拦截器
+
+---
+
+LightHttp在OkHttp的基础上额外提供了一个请求拦截器，这个拦截器可以拦截和修改请求所有相关的内容，包括返回值，可以在返回值到达CallBack的时候进行拦截修改。
+
+LightHttp提供了一个静态方法**setRequestFirstHandler**来设置一个请求拦截器，这个方法的定义如下：
+
+```java
+public static final void setRequestFirstHandler(IRequestFirstHandle requestFirstHandler);
+```
+
+这个方法接受一个接口类**IRequestFirstHandle**的实例，这个接口类定义如下：
+
+```java
+public interface IRequestFirstHandle {
+
+    String handlerUrl(String requestUrl);
+
+    Map<String,String> handlerHeader(Map<String,String> header);
+
+    String handlerBody(String body);
+
+    String handlerResponse(String response);
+    
+}
+```
+
+* handlerUrl：这个方法可以在请求之前处理请求的地址，在请求在创建的时候，会将请求地址通过参数一传递给这个方法，这个方法可以处理一下请求地址，例如增加一个请求头，或者修改一下请求地址，然后通过返回值返回即可。
+* handlerHeader：这个方法可以在请求之前处理请求传递的Header，在请求在创建的时候，会将本次请求传递的Header通过参数一传递给这个方法，这个方法可以处理一下本次请求使用的Header，然后通过返回值返回即可。
+* handlerBody：这个方法可以在请求之前处理一下请求要传递的Body，在青丘创建的时候，会将本次请求传递的Body通过参数一传递给这个方法，这个方法处理一下未格式化的请求Body，然后通过返回值进行返回。
+* handlerResponse：这个方法可以在请求结束后处理请求返回的数据，这个方法会在数据进行格式化之前被调用，传递给这个方法的数据是未格式化的原始数据，处理完成后通过返回值的方式返回原始数据，然后LightHttp在进行数据反序列化或者直接调用Callback直接传递给请求方。
+
+当然， 并不是需要开发人员把所有的方法全部实现，开发人员直接传入**AbsRequestFirstHandler**类的实例，这个类实现了这个接口，通常来讲，建议在Application的onCreate中调用**setRequestFirstHandler**方法设置请求拦截器。
+
 ### LightHttp的缺点
+
+---
 
 到目前为止，LightHttp并未提供Cookie相关的任何操作方法，我会在未来的版本提供支持。
 

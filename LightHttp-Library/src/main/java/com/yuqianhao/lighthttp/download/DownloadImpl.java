@@ -6,8 +6,6 @@ import android.os.Message;
 
 import com.yuqianhao.lighthttp.okhttp.HttpClientFactory;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -108,7 +106,7 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
             Request request=new Request.Builder().url(mDownloadUrl).get().build();
             HttpClientFactory.getOkHttpClient().newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                public void onFailure(Call call,IOException e) {
                     Message message=createMessage();
                     message.what=MESSAGEWHAT_ERROR;
                     message.obj=e.getMessage();
@@ -117,7 +115,7 @@ public class DownloadImpl implements IDownloadAction, Handler.Callback {
                 }
 
                 @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                public void onResponse(Call call,Response response) throws IOException {
                     if(response.code()!=200){
                         Message message=createMessage();
                         message.what=MESSAGEWHAT_ERROR;

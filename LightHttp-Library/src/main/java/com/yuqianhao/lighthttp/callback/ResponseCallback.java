@@ -1,6 +1,7 @@
 package com.yuqianhao.lighthttp.callback;
 
-import org.jetbrains.annotations.NotNull;
+import com.yuqianhao.lighthttp.handler.HandlerManager;
+import com.yuqianhao.lighthttp.handler.IRequestFirstHandle;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -45,7 +46,13 @@ public abstract class ResponseCallback<_RespType> {
     public ResponseCallback(){}
 
     public final void reSet(Response response) throws IOException {
-        this.mResponceBufferSource=response.body().bytes();
+        IRequestFirstHandle requestFirstHandle= HandlerManager.getRequestFirstHandle();
+        if(requestFirstHandle!=null){
+            String responseData=requestFirstHandle.handlerResponse(new String(response.body().bytes()));
+            this.mResponceBufferSource=responseData.getBytes();
+        }else{
+            this.mResponceBufferSource=response.body().bytes();
+        }
         this.mResponseMessage = response.message();
         this.mCode = response.code();
         this.mMediaType = response.body().contentType();
@@ -91,7 +98,7 @@ public abstract class ResponseCallback<_RespType> {
     /**
      * 根据指定的编码将服务器返回的数据转换为字符串
      * */
-    public final String getResponseBufferString(@NotNull Charset charset){
+    public final String getResponseBufferString(Charset charset){
         return new String(mResponceBufferSource,charset);
     }
 

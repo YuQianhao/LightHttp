@@ -9,13 +9,13 @@ import com.yuqianhao.lighthttp.callback.RequestCode;
 import com.yuqianhao.lighthttp.callback.ResponseCallback;
 import com.yuqianhao.lighthttp.convert.ConvertProcessManager;
 import com.yuqianhao.lighthttp.convert.TypeConvertProcessor;
+import com.yuqianhao.lighthttp.handler.HandlerManager;
 import com.yuqianhao.lighthttp.okhttp.HttpClientFactory;
 import com.yuqianhao.lighthttp.reqheader.MethodType;
+import com.yuqianhao.lighthttp.handler.IRequestFirstHandle;
 import com.yuqianhao.lighthttp.request.RequestConfig;
 import com.yuqianhao.lighthttp.request.RequestInterceptor;
 import com.yuqianhao.lighthttp.request.RequestMessage;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -46,9 +46,8 @@ public class RequestCollapse {
 
         private RequestInterceptor interceptor;
 
-        @NotNull
         @Override
-        public Response intercept(@NotNull Chain chain) throws IOException {
+        public Response intercept(Chain chain) throws IOException {
             Request request=chain.request();
             RequestBody requestBody=request.body();
             Map<String,String> headerMap=new HashMap<>();
@@ -73,6 +72,8 @@ public class RequestCollapse {
 
     private OkHttpClient okHttpClient;
 
+    private IRequestFirstHandle requestFirstHandle;
+
     private static final Handler HANDLER=new Handler(Looper.getMainLooper());
 
     public RequestCollapse(final RequestConfig requestConfig){
@@ -80,8 +81,8 @@ public class RequestCollapse {
     }
 
     private Request buildRequest(RequestMessage requestMessage){
+        IRequestFirstHandle requestFirstHandle= HandlerManager.getRequestFirstHandle();
         Request.Builder builder=new Request.Builder();
-        builder.url(requestMessage.getUrl());
         if(requestMessage.getMethod()== MethodType.GET){
             StringBuilder stringBuilder=new StringBuilder();
             stringBuilder.append(requestMessage.getUrl());
@@ -91,17 +92,31 @@ public class RequestCollapse {
                 stringBuilder.deleteCharAt(stringBuilder.length()-1
                 );
             }
-            builder.url(stringBuilder.toString());
+            if(requestFirstHandle!=null){
+                builder.url(requestFirstHandle.handlerUrl(stringBuilder.toString()));
+            }else{
+                builder.url(stringBuilder.toString());
+            }
         }else{
+            if(requestFirstHandle!=null){
+                builder.url(requestFirstHandle.handlerUrl(requestMessage.getUrl()));
+            }else{
+                builder.url(requestMessage.getUrl());
+            }
 //            builder.post(RequestBody.create(requestMessage.getData(), MediaType.parse(requestMessage.getContentType()+";charset="+requestMessage.getCharset().toString())));
-            String _ReqData=requestMessage.getData();
+            String _ReqData=(requestFirstHandle!=null)?requestFirstHandle.handlerBody(requestMessage.getData()):requestMessage.getData();
             builder.post(RequestBody.create(_ReqData==null?"":_ReqData, MediaType.parse(requestMessage.getContentType())));
         }
         Headers headers=requestMessage.getHeaders();
         Iterator<Pair<String, String>> iterator=headers.iterator();
+        Map<String,String> headerMap=new HashMap<>();
         while(iterator.hasNext()){
             Pair<String,String> item=iterator.next();
-            builder.addHeader(item.getFirst(),item.getSecond());
+            headerMap.put(item.getFirst(),item.getSecond());
+        }
+        headerMap=(requestFirstHandle!=null)?requestFirstHandle.handlerHeader(headerMap):headerMap;
+        for(Map.Entry<String,String> item:headerMap.entrySet()){
+            builder.addHeader(item.getKey(),item.getValue());
         }
         if(requestMessage.getTag()!=null){
             builder.tag(requestMessage.getTag());
@@ -188,7 +203,7 @@ public class RequestCollapse {
     public void asynchronous(final RequestMessage requestMessage){
         okHttpClient.newCall(buildRequest(requestMessage)).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull final IOException e) {
+            public void onFailure(Call call,final IOException e) {
                 HANDLER.post(new Runnable() {
                     @Override
                     public void run() {
@@ -199,7 +214,7 @@ public class RequestCollapse {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+            public void onResponse(Call call,final Response response) throws IOException {
                 callResult(requestMessage.getResponseCallback(),response,null);
             }
         });
