@@ -29,7 +29,7 @@ allprojects {
 2、在将仓库的项目依赖到你的项目Module的build.gradle中
 
 ```text
-implementation 'com.github.YuQianhao:LightHttp:1.2.6'
+implementation 'com.github.YuQianhao:LightHttp:1.2.7'
 ```
 
 ### Bug收集
