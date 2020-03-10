@@ -12,27 +12,23 @@
 
 ------
 
-[![](https://www.jitpack.io/v/YuQianhao/LightHttp.svg)](https://www.jitpack.io/#YuQianhao/LightHttp)
+1、在项目根目录中的build.gradle中添加依赖仓库。
 
-- Gradle
-
-1、首先将jitpack仓库添加到项目的build.gradle中
-
-```text
-allprojects {
-    repositories {
-        maven { url 'https://www.jitpack.io' }
-    }
+```gradle
+allprojects{
+	repositories{
+		maven { url 'https://dl.bintray.com/yuqianhao/public' }
+	}
 }
 ```
 
-2、在将仓库的项目依赖到你的项目Module的build.gradle中
+2、在需要使用依赖的Module里的build.gradle中添加依赖。
 
-```text
-implementation 'com.github.YuQianhao:LightHttp:1.2.91'
+```gradle
+implementation 'com.yuqianhao:LightHttp:1.2.91'
 ```
 
-### Bug收集
+Bug收集
 
 我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)，如果您有Bug或者疑问或者更好的建议提出，欢迎您添加我的微信：**185 6138 5652**。
 
