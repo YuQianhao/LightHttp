@@ -11,7 +11,7 @@
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.2.91'
+implementation 'com.yuqianhao:LightHttp:1.3.0'
 ```
 
 Bug收集
@@ -20,7 +20,7 @@ Bug收集
 
 ### 最近一次修正记录
 
-* 增加了LightHttp提供的请求拦截器。
+* 降低了对Gson的版本支持，防止在过时的项目中依赖发生unsupported class file version 53.0的问题。
 
 
 ### 如何构建一个网络请求？
