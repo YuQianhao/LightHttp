@@ -8,21 +8,7 @@
 
 ​	LightHttp提供了的Get，Post，Put，Delete四种不同方法的同步和异步请求，提供了一个文件下载服务以及一个请求拦截处理器。
 
-### 如何使用？
-
-------
-
-1、在项目根目录中的build.gradle中添加依赖仓库。
-
-```gradle
-allprojects{
-	repositories{
-		maven { url 'https://dl.bintray.com/yuqianhao/public' }
-	}
-}
-```
-
-2、在需要使用依赖的Module里的build.gradle中添加依赖。
+### 如何依赖？
 
 ```gradle
 implementation 'com.yuqianhao:LightHttp:1.2.91'
