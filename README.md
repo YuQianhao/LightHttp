@@ -1,6 +1,6 @@
 # LightHttp
 
-![于千皓](https://github.com/YuQianhao/LightHttp/blob/master/0.png)
+![LightHttp](https://github.com/YuQianhao/LightHttp/blob/master/0.png)
 
 ​	框架，顾名思义，是一个能够让开大人员节省时间提高开发效率的支撑。如今框架满天飞的时代，百家争鸣，各显神通，渐渐的忽略了“框架”这个词语的本质，反而开发人员需要大量的时间和精力去学习一些花里胡哨，极其复杂的“无意义”框架，而忽略了本质侧重点的“业务逻辑”。
 
@@ -64,6 +64,14 @@ TestBean testBead=response.to();
 
 #### 1、创建请求
 
+LightHttp提供了3种不同的请求创建方式，我们会在下面的代码片段中给您展示。
+
+* 直接创建
+* 通过配置类创建
+* 使用模板创建（如果您并不关心请求的创建过程，建议您使用这个方式，它可以提高您的开发效率）
+
+##### （1）、直接创建
+
 LightHttp使用了一个静态方法LightHttp.create()来创建一个请求，这个静态方法的原型如下：
 
 ```java
@@ -103,7 +111,9 @@ LightHttp.create(PostRequest.create("https://www.baidu.com"));
 LightHttp.create(PostRequest.create("https://www.baidu.com",1));
 ```
 
-然而创建请求还有第二种方式，LightHttp还提供了一个静态方法**loadRequest**来创建一个请求，这个方法相当于create，庞大的项目需要一个统一管理请求地址的方案，显然每一次请求都去写一次请求地址不是一个好的主意，LightHttp注意到了这一点，提供了几个注解类：
+##### （2）、通过配置类创建
+
+LightHttp还提供了一个静态方法**loadRequest**来创建一个请求，这个方法相当于create，庞大的项目需要一个统一管理请求地址的方案，显然每一次请求都去写一次请求地址不是一个好的主意，LightHttp注意到了这一点，提供了几个注解类：
 
 | 注解类         | 对应的请求类  |
 | -------------- | ------------- |
@@ -126,6 +136,10 @@ public class RequestAddressManager{
 ```java
 LightHttp.loadRequest(RequestAddressManager.Image.class);
 ```
+
+##### （3）、使用模板创建
+
+**在为您展示使用模板创建之前，建议您先了解一下下面的内容，简单了解一下LightHttp的传参，请求，类型转换，自动序列化等处理过程，因为模板创建的方式忽略了这些内容。如果您已经了解，那么您可以<a href="https://github.com/YuQianhao/LightHttp/blob/master/plugin/README.md">点击此处</a>直接查看模板创建方式。**
 
 #### 2、传递参数
 
