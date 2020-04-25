@@ -36,11 +36,12 @@
 
 ```json
 {
-    "packageName":"com.yuqianhao.request"
+    "packageName":"com.yuqianhao.request",
+    "className":"LightHttpRequest"
 }
 ```
 
-通过配置名为packageName的字段来配置这个包名，当插件为我们生成类文件的时候，它会寻找到这个包名并为我们创建，如果这个包名不存在它会去创建，我们也可以理解为，当插件生成类的时候，类的全名为com.yuqianhao.request.LightHttpRequest。
+通过配置名为packageName的字段来配置这个包名，className来配置生成的类的名称，当插件为我们生成类文件的时候，它会寻找到这个包名并为我们创建，如果这个包名不存在它会去创建，我们也可以理解为，当插件生成类的时候，类的全名为com.yuqianhao.request.LightHttpRequest。
 
 值得注意的是，这个字段只能出现一次，而且必须配置。
 
@@ -49,6 +50,7 @@
 ```json
 {
     "packageName":"com.yuqianhao.request",
+    "className":"LightHttpRequest",
     "content":[
     
     ]
@@ -62,6 +64,7 @@
 ```json
 {
     "packageName":"com.yuqianhao.request",
+    "className":"LightHttpRequest",
     "content":[
         {
     		"name":"getUserToken",
@@ -372,7 +375,8 @@ public class LightHttpRequest{
 ```json
 {
     "packageName":"com.yuqianhao.request",
-    "defaultParameters":{
+    "className":"LightHttpRequest",
+    "config":{
         "method":"post",
     	"type":"form",
     	"requestType":"async"
@@ -383,12 +387,13 @@ public class LightHttpRequest{
 }
 ```
 
-如果指定了defaultParameters这个对象，那么在创建方法请求体的时候，不需要再编写那个对象中指定了的值，除非要修改，插件在生成代码的时候，会优先使用方法体中的参数，如果方法体中找不到必传的参数，那么会到defaultParameters中去寻找，如果依然寻找不到，将会报错误。例如：
+如果指定了config这个对象，那么在创建方法请求体的时候，不需要再编写那个对象中指定了的值，除非要修改，插件在生成代码的时候，会优先使用方法体中的参数，如果方法体中找不到必传的参数，那么会到config中去寻找，如果依然寻找不到，将会报错误。例如：
 
 ```json
 {
     "packageName":"com.yuqianhao.request",
-    "defaultParameters":{
+    "className":"LightHttpRequest",
+    "config":{
         "method":"post",
     	"type":"form",
     	"requestType":"async"
