@@ -50,7 +50,13 @@ public class HttpClientFactory {
                         @Override
                         public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
                             List<String> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
-                            List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
+                            List<Cookie> cookieList;
+                            if(cookieArray==null){
+                                cookieList=new ArrayList<>();
+                                return cookieList;
+                            }else{
+                                cookieList=new ArrayList<>(cookieArray.size());
+                            }
                             for(String item : cookieArray){
                                 cookieList.add(Cookie.parse(httpUrl,item));
                             }
