@@ -11,7 +11,7 @@
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.3.0'
+implementation 'com.yuqianhao:LightHttp:1.3.1'
 ```
 
 Bug收集
@@ -20,7 +20,7 @@ Bug收集
 
 ### 最近一次修正记录
 
-* 降低了对Gson的版本支持，防止在过时的项目中依赖发生unsupported class file version 53.0的问题。
+* 我们增加了实验性的Cookie操作。
 
 
 ### 如何构建一个网络请求？
@@ -762,6 +762,10 @@ public interface IRequestFirstHandle {
 
     String handlerResponse(String response);
     
+    void cookie(String hosts, List<String> value);
+
+    List<String> loadCookie(String hosts);
+    
 }
 ```
 
@@ -769,14 +773,10 @@ public interface IRequestFirstHandle {
 * handlerHeader：这个方法可以在请求之前处理请求传递的Header，在请求在创建的时候，会将本次请求传递的Header通过参数一传递给这个方法，这个方法可以处理一下本次请求使用的Header，然后通过返回值返回即可。
 * handlerBody：这个方法可以在请求之前处理一下请求要传递的Body，在青丘创建的时候，会将本次请求传递的Body通过参数一传递给这个方法，这个方法处理一下未格式化的请求Body，然后通过返回值进行返回。
 * handlerResponse：这个方法可以在请求结束后处理请求返回的数据，这个方法会在数据进行格式化之前被调用，传递给这个方法的数据是未格式化的原始数据，处理完成后通过返回值的方式返回原始数据，然后LightHttp在进行数据反序列化或者直接调用Callback直接传递给请求方。
+* cookie：当网络请求执行完成的时候，会将获取到的cookie传送给这个方法，如果开发者传入了**AbsRequestFirstHandler**这个类的实例，那么可以直接调用super的版本即可，他为我们提供了一个简单缓存的版本。
+* loadCookie：当创建网络请求的时候，LightHttp在需要上传Cookie的时候调用这个方法，，如果开发者传入了**AbsRequestFirstHandler**这个类的实例，那么可以直接调用super的版本即可，他为我们提供了一个简单缓存的版本。
 
 当然， 并不是需要开发人员把所有的方法全部实现，开发人员直接传入**AbsRequestFirstHandler**类的实例，这个类实现了这个接口，通常来讲，建议在Application的onCreate中调用**setRequestFirstHandler**方法设置请求拦截器。
-
-### LightHttp的缺点
-
----
-
-到目前为止，LightHttp并未提供Cookie相关的任何操作方法，我会在未来的版本提供支持。
 
 ### 开源许可
 
