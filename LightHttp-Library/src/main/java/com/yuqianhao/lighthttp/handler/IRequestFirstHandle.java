@@ -1,5 +1,7 @@
 package com.yuqianhao.lighthttp.handler;
 
+import com.yuqianhao.lighthttp.model.Cookie;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +15,8 @@ public interface IRequestFirstHandle {
 
     String handlerResponse(String response);
 
-    void cookie(String hosts, List<String> value);
+    void cookie(String hosts, List<Cookie> value);
 
-    List<String> loadCookie(String hosts);
+    List<Cookie> loadCookie(String hosts);
 
 }

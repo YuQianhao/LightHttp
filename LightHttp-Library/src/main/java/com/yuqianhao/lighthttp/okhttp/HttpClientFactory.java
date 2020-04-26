@@ -34,9 +34,19 @@ public class HttpClientFactory {
                 public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
                     IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
                     if(requestFirstHandle!=null){
-                        List<String> valueArray=new ArrayList<>(list.size());
+                        List<com.yuqianhao.lighthttp.model.Cookie> valueArray=new ArrayList<>(list.size());
                         for(Cookie cookie : list){
-                            valueArray.add(cookie.value());
+                            com.yuqianhao.lighthttp.model.Cookie reqCookie=new com.yuqianhao.lighthttp.model.Cookie();
+                            reqCookie.setDomain(cookie.domain());
+                            reqCookie.setExpiresAt(cookie.expiresAt());
+                            reqCookie.setName(cookie.name());
+                            reqCookie.setPath(cookie.path());
+                            reqCookie.setSecure(cookie.secure());
+                            reqCookie.setHostOnly(cookie.hostOnly());
+                            reqCookie.setHttpOnly(cookie.httpOnly());
+                            reqCookie.setPersistent(cookie.persistent());
+                            reqCookie.setValue(cookie.value());
+                            valueArray.add(reqCookie);
                         }
                         requestFirstHandle.cookie(httpUrl.host(),valueArray);
                     }
@@ -47,13 +57,20 @@ public class HttpClientFactory {
                 public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
                     IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
                     if(requestFirstHandle!=null){
-                        List<String> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
+                        List<com.yuqianhao.lighthttp.model.Cookie> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
                         if(cookieArray==null){
                             return new ArrayList<>();
                         }
                         List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
-                        for(String item : cookieArray){
-                            cookieList.add(Cookie.parse(httpUrl,item));
+                        for(com.yuqianhao.lighthttp.model.Cookie item : cookieArray){
+                            Cookie cookie=new Cookie.Builder()
+                                    .name(item.getName())
+                                    .value(item.getValue())
+                                    .expiresAt(item.getExpiresAt())
+                                    .domain(item.getDomain())
+                                    .path(item.getPath())
+                                    .build();
+                            cookieList.add(cookie);
                         }
                         return cookieList;
                     }else{
