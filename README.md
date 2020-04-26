@@ -15,7 +15,7 @@
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.3.3'
+implementation 'com.yuqianhao:LightHttp:1.3.4'
 ```
 
 Bug收集
