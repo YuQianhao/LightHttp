@@ -29,43 +29,43 @@ public class HttpClientFactory {
     public static okhttp3.OkHttpClient getOkHttpClient(RequestConfig requestConfig) {
         if(okHttpClient==null){
             OkHttpClient.Builder builder=new OkHttpClient.Builder();
+            builder.cookieJar(new CookieJar() {
+                @Override
+                public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
+                    IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
+                    if(requestFirstHandle!=null){
+                        List<String> valueArray=new ArrayList<>(list.size());
+                        for(Cookie cookie : list){
+                            valueArray.add(cookie.value());
+                        }
+                        requestFirstHandle.cookie(httpUrl.host(),valueArray);
+                    }
+                }
+
+                @NotNull
+                @Override
+                public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
+                    IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
+                    if(requestFirstHandle!=null){
+                        List<String> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
+                        if(cookieArray==null){
+                            return new ArrayList<>();
+                        }
+                        List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
+                        for(String item : cookieArray){
+                            cookieList.add(Cookie.parse(httpUrl,item));
+                        }
+                        return cookieList;
+                    }else{
+                        return new ArrayList<>();
+                    }
+                }
+            });
             if(requestConfig!=null){
                 builder.connectTimeout(requestConfig.connectTimeout(),requestConfig.timeUnit());
                 builder.callTimeout(requestConfig.callTimeout(),requestConfig.timeUnit());
                 builder.writeTimeout(requestConfig.writeTimeOut(),requestConfig.timeUnit());
                 builder.readTimeout(requestConfig.readTimeout(),requestConfig.timeUnit());
-                builder.cookieJar(new CookieJar() {
-                    @Override
-                    public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
-                        IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
-                        if(requestFirstHandle!=null){
-                            List<String> valueArray=new ArrayList<>(list.size());
-                            for(Cookie cookie : list){
-                                valueArray.add(cookie.value());
-                            }
-                            requestFirstHandle.cookie(httpUrl.host(),valueArray);
-                        }
-                    }
-
-                    @NotNull
-                    @Override
-                    public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
-                        IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
-                        if(requestFirstHandle!=null){
-                            List<String> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
-                            if(cookieArray==null){
-                                return new ArrayList<>();
-                            }
-                            List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
-                            for(String item : cookieArray){
-                                cookieList.add(Cookie.parse(httpUrl,item));
-                            }
-                            return cookieList;
-                        }else{
-                            return new ArrayList<>();
-                        }
-                    }
-                });
             }
             okHttpClient=builder.build();
         }
