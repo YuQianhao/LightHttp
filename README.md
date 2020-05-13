@@ -20,7 +20,7 @@ implementation 'com.yuqianhao:LightHttp:1.3.4'
 
 Bug收集
 
-我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)，如果您有Bug或者疑问或者更好的建议提出，欢迎您添加我的微信：**185 6138 5652**。
+我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)。
 
 ### 最近一次修正记录
 
