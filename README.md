@@ -12,7 +12,7 @@
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.3.5'
+implementation 'com.yuqianhao:LightHttp:1.3.6'
 ```
 
 Bug收集
@@ -21,6 +21,7 @@ Bug收集
 
 ### 最近一次修正记录
 
+* minSdkVersion提高到22，将不再支持5.0及以下的设备。
 * 提高了对Android SDK的版本支持：30。
 * 提高了对OkHttp的最新版本支持。
 * 我们增加了实验性的Cookie操作。

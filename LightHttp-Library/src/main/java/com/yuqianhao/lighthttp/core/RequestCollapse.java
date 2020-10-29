@@ -103,7 +103,6 @@ public class RequestCollapse {
             }else{
                 builder.url(requestMessage.getUrl());
             }
-//            builder.post(RequestBody.create(requestMessage.getData(), MediaType.parse(requestMessage.getContentType()+";charset="+requestMessage.getCharset().toString())));
             String _ReqData=(requestFirstHandle!=null)?requestFirstHandle.handlerBody(requestMessage.getData()):requestMessage.getData();
             builder.post(RequestBody.create(_ReqData==null?"":_ReqData, MediaType.parse(requestMessage.getContentType())));
         }
@@ -129,12 +128,7 @@ public class RequestCollapse {
         try {
             responseCallback.reSet(response);
         } catch (IOException e) {
-            HANDLER.post(new Runnable() {
-                @Override
-                public void run() {
-                    responseCallback.onFailure(RequestCode.LOCAL_ERROR,"Unable to create objects "+ResponseCallback.class.getName());
-                }
-            });
+            HANDLER.post(() -> responseCallback.onFailure(RequestCode.LOCAL_ERROR,"Unable to create objects "+ResponseCallback.class.getName()));
         }
         if(responseCallback.getCode()==RequestCode.REQUEST_SUCCESS){
             Type superclassType=responseCallback.getClass().getGenericSuperclass();
@@ -151,43 +145,18 @@ public class RequestCollapse {
             if(!type.equals(Nullptr.class) && !type.equals(Void.class) && !type.equals(Object.class)){
                 final TypeConvertProcessor typeConvertProcessor= ConvertProcessManager.get(type);
                 if(typeConvertProcessor!=null){
-                    HANDLER.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            responseCallback.onSuccess(typeConvertProcessor.convertType(responseCallback.getResponseBuffer()));
-                        }
-                    });
+                    HANDLER.post(() -> responseCallback.onSuccess(typeConvertProcessor.convertType(responseCallback.getResponseBuffer())));
                 }else{
                     final Type _SendType=type;
-                    HANDLER.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            responseCallback.onSuccess(Utils.getGson().fromJson(responseCallback.getResponseBufferString(),_SendType));
-                        }
-                    });
+                    HANDLER.post(() -> responseCallback.onSuccess(Utils.getGson().fromJson(responseCallback.getResponseBufferString(),_SendType)));
                 }
             }else{
-                HANDLER.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        responseCallback.onSuccess(null);
-                    }
-                });
+                HANDLER.post(() -> responseCallback.onSuccess(null));
             }
         }else{
-            HANDLER.post(new Runnable() {
-                @Override
-                public void run() {
-                    responseCallback.onFailure(responseCallback.getCode(),responseCallback.getMessage());
-                }
-            });
+            HANDLER.post(() -> responseCallback.onFailure(responseCallback.getCode(),responseCallback.getMessage()));
         }
-        HANDLER.post(new Runnable() {
-            @Override
-            public void run() {
-                responseCallback.onCompany();
-            }
-        });
+        HANDLER.post(() -> responseCallback.onCompany());
     }
 
     public void synchronization(RequestMessage requestMessage,Type type){
@@ -204,12 +173,9 @@ public class RequestCollapse {
         okHttpClient.newCall(buildRequest(requestMessage)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call,final IOException e) {
-                HANDLER.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        requestMessage.getResponseCallback().onFailure(RequestCode.LOCAL_ERROR,e.getMessage());
-                        requestMessage.getResponseCallback().onCompany();
-                    }
+                HANDLER.post(() -> {
+                    requestMessage.getResponseCallback().onFailure(RequestCode.LOCAL_ERROR,e.getMessage());
+                    requestMessage.getResponseCallback().onCompany();
                 });
             }
 

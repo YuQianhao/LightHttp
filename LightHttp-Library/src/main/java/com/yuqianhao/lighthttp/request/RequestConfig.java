@@ -20,19 +20,5 @@ public class RequestConfig {
 
     public long callTimeout(){return 1L;}
 
-    /**
-     * @deprecated 这个操作Cookie的方法已经过时，
-     *              建议使用{@link com.yuqianhao.lighthttp.LightHttp#setRequestFirstHandler(IRequestFirstHandle)}
-     * 
-     * */
-    public final CookieCallback cookieCallback(){return null;}
-
-    /**
-     * @deprecated 这个拦截方法已过时，
-     *             建议使用功能更强大拦截器，详见
-     *             {@link com.yuqianhao.lighthttp.LightHttp#setRequestFirstHandler(IRequestFirstHandle)}
-     * */
-    @Deprecated
-    public RequestInterceptor requestInterceptor(){return null;}
 
 }
