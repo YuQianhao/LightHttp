@@ -15,7 +15,7 @@
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.3.1'
+implementation 'com.yuqianhao:LightHttp:1.3.5'
 ```
 
 Bug收集
@@ -24,6 +24,8 @@ Bug收集
 
 ### 最近一次修正记录
 
+* 最高支持Android版本为11.
+* 提高了对OkHttp的支持。
 * 我们增加了实验性的Cookie操作。
 
 
