@@ -1,12 +1,14 @@
 package com.yuqianhao.lighthttp.handler;
 
+import com.yuqianhao.lighthttp.model.Cookie;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AbsRequestFirstHandler implements IRequestFirstHandle{
 
-    private Map<String,List<String>> cookieMap=new HashMap<>();
+    private Map<String,List<Cookie>> cookieMap=new HashMap<>();
 
     @Override
     public String handlerUrl(String requestUrl) {
@@ -29,12 +31,12 @@ public class AbsRequestFirstHandler implements IRequestFirstHandle{
     }
 
     @Override
-    public void cookie(String hosts, List<String> value) {
+    public void cookie(String hosts, List<Cookie> value) {
         cookieMap.put(hosts,value);
     }
 
     @Override
-    public List<String> loadCookie(String hosts) {
+    public List<Cookie> loadCookie(String hosts) {
         return cookieMap.get(hosts);
     }
 }

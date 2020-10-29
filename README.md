@@ -8,24 +8,19 @@
 
 ​	LightHttp提供了的Get，Post，Put，Delete四种不同方法的同步和异步请求，提供了一个文件下载服务以及一个请求拦截处理器。
 
-### 温馨提醒
-
-如果你想给我这个项目Star的话，我觉得你可以暂停1分钟听我说，不要Star这个项目，因为我只是个封装者，核心并不是我做的，如果要Star，我觉得还是应该给[OkHttp](https://github.com/square/okhttp)，因为它为我们提供了核心，我们在它的基础上进行了高度包装而已。
 
 ### 如何依赖？
 
 ```gradle
-implementation 'com.yuqianhao:LightHttp:1.3.5'
+implementation 'com.yuqianhao:LightHttp:1.3.4'
 ```
 
 Bug收集
 
-我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)，如果您有Bug或者疑问或者更好的建议提出，欢迎您添加我的微信：**185 6138 5652**。
+我们会将收到的开发者Bug反馈记录下来并尽力更正，详见[Bug收集日志](https://github.com/YuQianhao/LightHttp/blob/master/bug.md)。
 
 ### 最近一次修正记录
 
-* 最高支持Android版本为11.
-* 提高了对OkHttp的支持。
 * 我们增加了实验性的Cookie操作。
 
 

@@ -29,38 +29,60 @@ public class HttpClientFactory {
     public static okhttp3.OkHttpClient getOkHttpClient(RequestConfig requestConfig) {
         if(okHttpClient==null){
             OkHttpClient.Builder builder=new OkHttpClient.Builder();
-            final IRequestFirstHandle requestFirstHandle = HandlerManager.getRequestFirstHandle();
+            builder.cookieJar(new CookieJar() {
+                @Override
+                public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
+                    IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
+                    if(requestFirstHandle!=null){
+                        List<com.yuqianhao.lighthttp.model.Cookie> valueArray=new ArrayList<>(list.size());
+                        for(Cookie cookie : list){
+                            com.yuqianhao.lighthttp.model.Cookie reqCookie=new com.yuqianhao.lighthttp.model.Cookie();
+                            reqCookie.setDomain(cookie.domain());
+                            reqCookie.setExpiresAt(cookie.expiresAt());
+                            reqCookie.setName(cookie.name());
+                            reqCookie.setPath(cookie.path());
+                            reqCookie.setSecure(cookie.secure());
+                            reqCookie.setHostOnly(cookie.hostOnly());
+                            reqCookie.setHttpOnly(cookie.httpOnly());
+                            reqCookie.setPersistent(cookie.persistent());
+                            reqCookie.setValue(cookie.value());
+                            valueArray.add(reqCookie);
+                        }
+                        requestFirstHandle.cookie(httpUrl.host(),valueArray);
+                    }
+                }
+
+                @NotNull
+                @Override
+                public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
+                    IRequestFirstHandle requestFirstHandle=HandlerManager.getRequestFirstHandle();
+                    if(requestFirstHandle!=null){
+                        List<com.yuqianhao.lighthttp.model.Cookie> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
+                        if(cookieArray==null){
+                            return new ArrayList<>();
+                        }
+                        List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
+                        for(com.yuqianhao.lighthttp.model.Cookie item : cookieArray){
+                            Cookie cookie=new Cookie.Builder()
+                                    .name(item.getName())
+                                    .value(item.getValue())
+                                    .expiresAt(item.getExpiresAt())
+                                    .domain(item.getDomain())
+                                    .path(item.getPath())
+                                    .build();
+                            cookieList.add(cookie);
+                        }
+                        return cookieList;
+                    }else{
+                        return new ArrayList<>();
+                    }
+                }
+            });
             if(requestConfig!=null){
                 builder.connectTimeout(requestConfig.connectTimeout(),requestConfig.timeUnit());
                 builder.callTimeout(requestConfig.callTimeout(),requestConfig.timeUnit());
                 builder.writeTimeout(requestConfig.writeTimeOut(),requestConfig.timeUnit());
                 builder.readTimeout(requestConfig.readTimeout(),requestConfig.timeUnit());
-                if(requestFirstHandle!=null){
-                    builder.cookieJar(new CookieJar() {
-                        @Override
-                        public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
-                            List<String> valueArray=new ArrayList<>(list.size());
-                            for(Cookie cookie : list){
-                                valueArray.add(cookie.value());
-                            }
-                            requestFirstHandle.cookie(httpUrl.host(),valueArray);
-                        }
-
-                        @NotNull
-                        @Override
-                        public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
-                            List<String> cookieArray=requestFirstHandle.loadCookie(httpUrl.host());
-                            if(cookieArray==null){
-                                return new ArrayList<>();
-                            }
-                            List<Cookie> cookieList=new ArrayList<>(cookieArray.size());
-                            for(String item : cookieArray){
-                                cookieList.add(Cookie.parse(httpUrl,item));
-                            }
-                            return cookieList;
-                        }
-                    });
-                }
             }
             okHttpClient=builder.build();
         }
