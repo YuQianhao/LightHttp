@@ -21,6 +21,8 @@ Bug收集
 
 ### 最近一次修正记录
 
+* 提高了插件LightHttpGeneration的支持版本。
+
 * minSdkVersion提高到22，将不再支持5.0及以下的设备。
 * 提高了对Android SDK的版本支持：30。
 * 提高了对OkHttp的最新版本支持。
