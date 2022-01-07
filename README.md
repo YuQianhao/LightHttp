@@ -1,4 +1,4 @@
-# LightHttp
+# <font color=red>【停止维护，谢谢支持，欢迎加我微信“yqh61385652”一起交流】</font>LightHttp
 
 ![LightHttp](https://github.com/YuQianhao/LightHttp/blob/master/0.png)
 
